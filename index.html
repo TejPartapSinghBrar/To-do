@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do</title>
+    <style>
+        body {
+            background-image: url('https://images.pexels.com/photos/5124880/pexels-photo-5124880.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 600px;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+        input[type="text"] {
+            padding: 12px;
+            width: calc(100% - 24px);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+            font-size: 16px;
+        }
+        input[type="text"]::placeholder {
+            color: #999;
+        }
+        button {
+            padding: 12px;
+            border: none;
+            background-color: #ca8181;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #ae6969;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f1f1f1;
+            color: #333;
+        }
+        .task-wrapper {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .task-wrapper table {
+            flex-grow: 1;
+        }
+        .remove-icon {
+            margin-left: 10px;
+            cursor: pointer;
+            color: #ff4d4f;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .remove-icon:hover {
+            color: #ff7875;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>To-Do List</h2>
+    <input type="text" id="rollNumberInput" placeholder="Roll Number">
+    <input type="text" id="nameInput" placeholder="Student Name">
+    <input type="text" id="taskInput" placeholder="Add a new task...">
+    <button id="addTaskBtn">Add Task 🎀</button>
+    <div id="taskTableContainer"></div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const rollNumberInput = document.getElementById('rollNumberInput');
+        const nameInput = document.getElementById('nameInput');
+        const taskInput = document.getElementById('taskInput');
+        const addTaskBtn = document.getElementById('addTaskBtn');
+        const taskTableContainer = document.getElementById('taskTableContainer');
+
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+        function displayTasks() {
+            taskTableContainer.innerHTML = '';
+            tasks.forEach((task, index) => {
+                const taskWrapper = document.createElement('div');
+                taskWrapper.className = 'task-wrapper';
+
+                const table = document.createElement('table');
+                table.innerHTML = `
+                    <tr>
+                        <td>${task.rollNumber}</td>
+                        <td>${task.name}</td>
+                        <td>${task.task}</td>
+                    </tr>
+                `;
+
+                const removeIcon = document.createElement('span');
+                removeIcon.className = 'remove-icon';
+                removeIcon.textContent = '❌';
+                removeIcon.onclick = () => removeTask(index);
+
+                taskWrapper.appendChild(table);
+                taskWrapper.appendChild(removeIcon);
+                taskTableContainer.appendChild(taskWrapper);
+            });
+        }
+
+        function addTask() {
+            const rollNumber = rollNumberInput.value.trim();
+            const name = nameInput.value.trim();
+            const task = taskInput.value.trim();
+
+            if (rollNumber !== '' && name !== '' && task !== '') {
+                tasks.push({ rollNumber, name, task });
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+                rollNumberInput.value = '';
+                nameInput.value = '';
+                taskInput.value = '';
+                displayTasks();
+            }
+        }
+
+        function removeTask(index) {
+            tasks.splice(index, 1);
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            displayTasks();
+        }
+
+        addTaskBtn.addEventListener('click', addTask);
+        taskInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                addTask();
+            }
+        });
+
+        displayTasks();
+    });
+</script>
+
+</body>
+</html>
